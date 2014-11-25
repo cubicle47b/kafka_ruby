@@ -1,0 +1,53 @@
+require 'poseidon'
+require 'json'
+require './message'
+
+class Consumer
+	
+	# Constructor
+	def initialize(id, host, port, topic, partitions)
+
+		# Set Properties
+		@id = id
+		@host = host
+		@port = port
+		@topic = topic
+		@partitions = partitions
+
+		@consumers = []
+		@partitions.times do |i|
+			@consumers << Poseidon::PartitionConsumer.new(@id, @host, @port, @topic, i, :latest_offset)
+		end
+
+	end
+
+	# Messages
+	private
+	def read_poseidon_messages()
+		messages = []
+		@consumers.each do |c|
+			c.fetch.each do |pm|
+				message = MessageFactory.create_message(:json=>pm.value)
+				if (!message.to? || message.to == @id) then
+					messages << message
+				end
+			end
+		end
+		return messages
+	end
+
+	def wait_read()
+		messages = read_poseidon_messages()
+		while (messages.length == 0)
+			sleep(0.01)
+			messages = read_poseidon_messages()
+		end
+		return messages
+	end
+
+	public
+	def read_messages()
+		return wait_read()
+	end
+
+end

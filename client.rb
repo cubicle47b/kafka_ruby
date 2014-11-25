@@ -1,0 +1,71 @@
+require './communications'
+
+class Client
+
+	# Constructor
+	def initialize(id, partitions)
+		@communications = Communications.new(id, "localhost", 9092, "server_queue", "client_queue", partitions)
+	end
+
+	# Requests
+	def run_simple_medical_request(last_name, first_name)
+		
+		# Send Request
+		request = RequestMessage.new()
+		request.request_type = :simple_medical
+		request.parameter1 = last_name
+		request.parameter2 = first_name
+		@communications.send_messages([request])
+
+		# Receive Reply
+		reply = @communications.receive_messages().first
+		puts "Last Name: #{reply.last_name}"
+		puts "First Name: #{reply.first_name}"
+		puts "Alive: #{reply.alive}"
+		puts
+
+	end
+
+	def run_detailed_medical_request(last_name, first_name)
+
+		# Send Request
+		request = RequestMessage.new()
+		request.request_type = :detailed_medical
+		request.parameter1 = last_name
+		request.parameter2 = first_name
+		@communications.send_messages([request])
+
+		# Receive Reply
+		reply = @communications.receive_messages().first
+		puts "Last Name: #{reply.last_name}"
+		puts "First Name: #{reply.first_name}"
+		puts "City: #{reply.city}"
+		puts "State: #{reply.state}"
+		puts "Zip Code: #{reply.zip_code}"
+		puts "Age: #{reply.age}"
+		puts "Alive: #{reply.alive}"
+		puts
+
+	end
+
+	def run_file_request(id)
+
+		# Send Request
+		request = RequestMessage.new()
+		request.request_type = :file
+		request.parameter1 = id
+		@communications.send_messages([request])
+
+		# Receive Reply
+		reply = @communications.receive_messages().first
+		puts "Filename: #{reply.filename}"
+		puts "File: #{reply.file}"
+		puts
+
+	end
+
+end
+
+
+
+

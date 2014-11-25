@@ -1,0 +1,43 @@
+require './database'
+require './message'
+
+require './server'
+
+#=begin
+reply = handle_simple_medical_request("")
+puts reply.last_name
+#=end
+
+=begin
+m = MessageFactory.create_message(:type=>"SimpleMedical")
+puts "m"
+puts m.type
+
+x = m.to_json()
+puts "x"
+puts x
+
+y = MessageFactory.create_message(:json=>x)
+puts "y"
+puts y.last_name
+y.last_name = "something"
+puts y.last_name
+=end
+
+=begin
+database = Database.new
+
+database.users().each do |r|
+	puts 'Id: ' + r[:Id].to_s() + '   Username: ' + r[:Username]
+end
+
+database.get_user_by_id("2").each do |r|
+	puts r[:Id]
+end
+
+database.get_medical_record_by_name('Leyden', 'David').each do |r|
+	puts r
+end
+=end
+
+
